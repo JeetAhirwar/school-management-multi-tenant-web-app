@@ -1,0 +1,12 @@
+{
+  "name": "@school-erp/shared",
+  "version": "1.0.0",
+  "description": "Single source of truth for platform-wide stable utilities (JWT secret contract, RBAC permission map, pagination, ObjectId validation, ImageKit config). Phase 1 shared code foundation.",
+  "main": "src/index.js",
+  "private": true,
+  "dependencies": {
+    "dotenv": "^16.6.1",
+    "imagekit": "^6.0.0",
+    "mongoose": "^8.5.1"
+  }
+}

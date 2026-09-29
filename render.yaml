@@ -1,0 +1,93 @@
+services:
+  # ============================================================
+  # MONOLITH BACKEND — all 8 microservices + API gateway
+  # in a single Render Web Service ($7/mo Starter plan)
+  # ============================================================
+  - type: web
+    name: zipschool-backend
+    runtime: node
+    rootDir: Backend-server
+    buildCommand: npm run install:all
+    startCommand: node monolith.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONOLITH_SERVICES
+        value: auth,student,staff,academic,fee,accounting,gateway
+
+      # ── Secrets (set these in Render Dashboard, NOT here) ──────
+      - key: JWT_SECRET
+        sync: false
+      - key: CORS_ORIGIN
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: INTERNAL_NOTIFY_KEY
+        sync: false
+      - key: GATEWAY_KEYS_ENC_KEY
+        sync: false
+
+      # ── MongoDB (one per service — all on the same Atlas cluster) ─
+      - key: AUTH_MONGODB_URI
+        sync: false
+      - key: STUDENT_MONGODB_URI
+        sync: false
+      - key: STAFF_MONGODB_URI
+        sync: false
+      - key: ACADEMIC_MONGODB_URI
+        sync: false
+      - key: FEE_MONGODB_URI
+        sync: false
+      - key: COMMUNICATION_MONGODB_URI
+        sync: false
+      - key: LIBRARY_MONGODB_URI
+        sync: false
+      - key: FACILITY_MONGODB_URI
+        sync: false
+      - key: ACCOUNTING_MONGODB_URI
+        sync: false
+
+      # ── ImageKit (file uploads) ────────────────────────────────
+      - key: IMAGEKIT_PUBLIC_KEY
+        sync: false
+      - key: IMAGEKIT_PRIVATE_KEY
+        sync: false
+      - key: IMAGEKIT_URL_ENDPOINT
+        sync: false
+
+      # ── SMTP / email ──────────────────────────────────────────
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: SMTP_FROM
+        sync: false
+
+      # ── Payment provider (optional) ───────────────────────────
+      - key: PAYMENT_PROVIDER_ENABLED
+        value: "false"
+      - key: PAYMENT_PROVIDER_NAME
+        sync: false
+      - key: PAYMENT_PROVIDER_KEY_ID
+        sync: false
+      - key: PAYMENT_PROVIDER_KEY_SECRET
+        sync: false
+      - key: PAYMENT_PROVIDER_WEBHOOK_SECRET
+        sync: false
+
+  # ============================================================
+  # FRONTEND — React/Vite static site (free tier)
+  # ============================================================
+  - type: static_site
+    name: zipschool-frontend
+    rootDir: Admin-panel
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        sync: false

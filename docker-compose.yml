@@ -1,0 +1,180 @@
+version: "3.9"
+
+services:
+  mongo:
+    image: mongo:7
+    container_name: erp-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - erp-network
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: api-gateway/Dockerfile
+    container_name: erp-api-gateway
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      # Override localhost URLs with Docker service names for inter-container communication
+      - AUTH_SERVICE_URL=http://auth-service:5001
+      - STUDENT_SERVICE_URL=http://student-service:5002
+      - STAFF_SERVICE_URL=http://staff-service:5003
+      - ACADEMIC_SERVICE_URL=http://academic-service:5004
+      - FEE_SERVICE_URL=http://fee-service:5005
+      - COMMUNICATION_SERVICE_URL=http://communication-service:5006
+      - LIBRARY_SERVICE_URL=http://library-service:5007
+      - FACILITY_SERVICE_URL=http://facility-service:5008
+      - ACCOUNTING_SERVICE_URL=http://accounting-service:5009
+    ports:
+      - "5000:5000"
+    depends_on:
+      - auth-service
+      - student-service
+      - staff-service
+      - academic-service
+      - fee-service
+      - communication-service
+      - library-service
+      - facility-service
+      - accounting-service
+    networks:
+      - erp-network
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: services/auth-service/Dockerfile
+    container_name: erp-auth-service
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - AUTH_MONGODB_URI=mongodb://mongo:27017/erp_auth
+    depends_on:
+      - mongo
+    networks:
+      - erp-network
+
+  student-service:
+    build:
+      context: .
+      dockerfile: services/student-service/Dockerfile
+    container_name: erp-student-service
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - STUDENT_MONGODB_URI=mongodb://mongo:27017/erp_student
+    depends_on:
+      - mongo
+    networks:
+      - erp-network
+
+  staff-service:
+    build:
+      context: .
+      dockerfile: services/staff-service/Dockerfile
+    container_name: erp-staff-service
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - STAFF_MONGODB_URI=mongodb://mongo:27017/erp_staff
+    depends_on:
+      - mongo
+    networks:
+      - erp-network
+
+  academic-service:
+    build:
+      context: .
+      dockerfile: services/academic-service/Dockerfile
+    container_name: erp-academic-service
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - ACADEMIC_MONGODB_URI=mongodb://mongo:27017/erp_academic
+    depends_on:
+      - mongo
+    networks:
+      - erp-network
+
+  fee-service:
+    build:
+      context: .
+      dockerfile: services/fee-service/Dockerfile
+    container_name: erp-fee-service
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - FEE_MONGODB_URI=mongodb://mongo:27017/erp_fee
+    depends_on:
+      - mongo
+    networks:
+      - erp-network
+
+  communication-service:
+    build:
+      context: .
+      dockerfile: services/communication-service/Dockerfile
+    container_name: erp-communication-service
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - COMMUNICATION_MONGODB_URI=mongodb://mongo:27017/erp_communication
+    depends_on:
+      - mongo
+    networks:
+      - erp-network
+
+  library-service:
+    build:
+      context: .
+      dockerfile: services/library-service/Dockerfile
+    container_name: erp-library-service
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - LIBRARY_MONGODB_URI=mongodb://mongo:27017/erp_library
+    depends_on:
+      - mongo
+    networks:
+      - erp-network
+
+  facility-service:
+    build:
+      context: .
+      dockerfile: services/facility-service/Dockerfile
+    container_name: erp-facility-service
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - FACILITY_MONGODB_URI=mongodb://mongo:27017/erp_facility
+    depends_on:
+      - mongo
+    networks:
+      - erp-network
+
+  accounting-service:
+    build:
+      context: .
+      dockerfile: services/accounting-service/Dockerfile
+    container_name: erp-accounting-service
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      # Dedicated database; falls back to FEE_MONGODB_URI in code when unset.
+      - ACCOUNTING_MONGODB_URI=mongodb://mongo:27017/erp_accounting
+    depends_on:
+      - mongo
+    networks:
+      - erp-network
+
+networks:
+  erp-network:
+    driver: bridge
+
+volumes:
+  mongo_data:

@@ -1,0 +1,37 @@
+# Dependencies (each service installs its own inside the container)
+node_modules/
+
+# Environment files (secrets — never baked into images)
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+
+# Git
+.git
+.gitignore
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker compose (not needed inside containers)
+docker-compose.yml
+docker-compose*.yml
+
+# Documentation
+*.md
+LICENSE
+
+# Test / scripts not needed in production images
+scripts/
+tests/

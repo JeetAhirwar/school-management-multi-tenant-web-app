@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "school-erp-backend": "file:../..",
+    "school-management-e2e": "file:../../.."
+  }
+}
